@@ -6,6 +6,8 @@
 
 void dump_element(record_t * r);
 
+
+
 stack_t * create_stack(void * (*custom_malloc)(size_t),
 		void (*custom_free)(void *))
 {
@@ -41,13 +43,14 @@ stack_t * create_stack(void * (*custom_malloc)(size_t),
 void destroy_stack(stack_t * stack)
 {
 	record_t *current = NULL;
+	void (*custom_free)(void *) = stack->free;
 
 	for(current = stack->head; current != NULL; current = current->prev) {
 		stack->free(current->data);
 		stack->free(current);
 	}
 
-	free(stack);
+	custom_free(stack);
 }
 
 record_t * create_element(stack_t * stack, char * data)
@@ -121,6 +124,7 @@ int prepend(stack_t * stack, char * data) {
 		link->next = first_record;
 		first_record->prev = link;
 	}
+	return 0;
 }
 
 int pop_last(stack_t * stack, char ** data)
