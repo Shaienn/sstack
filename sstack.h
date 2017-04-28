@@ -11,7 +11,6 @@ typedef struct {
 	void * (*malloc)(size_t);
 	void (*free)(void *);
 	record_t * head;
-	record_t * tail;
 } stack_t;
 
 stack_t * create_stack(void * (*custom_malloc)(size_t),

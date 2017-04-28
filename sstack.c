@@ -5,7 +5,7 @@
 #include "sstack.h"
 
 void dump_element(record_t * r);
-
+record_t * create_element(stack_t * stack, char * data);
 
 
 stack_t * create_stack(void * (*custom_malloc)(size_t),
@@ -44,8 +44,11 @@ void destroy_stack(stack_t * stack)
 {
 	record_t *current = NULL;
 	void (*custom_free)(void *) = stack->free;
+	void * prev = NULL;
 
-	for(current = stack->head; current != NULL; current = current->prev) {
+	for(current = stack->head, prev = current == NULL ? NULL : current->prev;
+			current != NULL;
+			current = prev, prev = current == NULL ? NULL : current->prev) {
 		stack->free(current->data);
 		stack->free(current);
 	}
@@ -71,14 +74,9 @@ record_t * create_element(stack_t * stack, char * data)
 	return link;
 
 exit_with_error:
-	if (link->data) {
-		stack->free(link->data);
-	}
-
 	if (link) {
 		stack->free(link);
 	}
-
 	return NULL;
 }
 
@@ -172,10 +170,12 @@ no_data:
 }
 
 void dump_element(record_t * r) {
-		printf("\telement %p\n", r);
-		printf("\t\tdata: %s\n", r->data);
-		printf("\t\tnext: %p\n", r->next);
-		printf("\t\tprev: %p\n", r->prev);
+	if (r == NULL)
+		return;
+	printf("\telement %p\n", (void *)r);
+	printf("\t\tdata: %s\n", r->data == NULL ? "NULL" : r->data);
+	printf("\t\tnext: %p\n", (void *)r->next);
+	printf("\t\tprev: %p\n", (void *)r->prev);
 }
 
 void dump_stack(stack_t * stack)
